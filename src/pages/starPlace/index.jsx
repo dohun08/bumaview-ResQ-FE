@@ -1,10 +1,12 @@
-import Space from "@/components/layout/space/index.jsx";
-
+import { useState } from 'react';
+import VideoBackground from '@/components/layout/video-background';
 
 export default function StarPlace() {
-  return(
-    <Space>
-
-    </Space>
-  )
+  const [videoNumber, setVideoNumber] = useState(1);
+  const startTime = (videoNumber - 1) * 4;
+  
+  return (
+    <VideoBackground startTime={startTime} duration={4}>
+    </VideoBackground>
+  );
 }

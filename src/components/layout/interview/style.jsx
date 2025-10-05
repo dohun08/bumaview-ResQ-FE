@@ -77,7 +77,7 @@ export const RopeAndManContainer = styled.div`
 
 export const Rope = styled.img`
   position: absolute;
-  top: 0;
+  top: -30%;
   left: 70%;
   transform: translateX(-50%);
   width: 30px;
@@ -87,7 +87,7 @@ export const Rope = styled.img`
 
 export const Man = styled.img`
   position: absolute;
-  bottom: 300px;
+  bottom: 0;
   left: 70%;
   transform: translateX(-50%);
   width: 160px;
@@ -106,7 +106,7 @@ export const ChoiAnimation = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: -280px;
+  top: -580px;
   left: 0;
   z-index: 100;
   animation: ${({ $isAnimating }) => $isAnimating ? 'descend 100s linear forwards' : 'none'};

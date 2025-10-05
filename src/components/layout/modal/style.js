@@ -20,9 +20,8 @@ export const ModalOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   z-index: 1000;
-  padding-top: 20vh;
 `;
 
 export const ModalContent = styled.div`

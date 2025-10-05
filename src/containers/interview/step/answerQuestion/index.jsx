@@ -1,165 +1,108 @@
-// src/components/VoiceToText.jsx
-import React, { useEffect, useRef, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useEffect, useState } from "react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Button from "@/components/ui/button/index.jsx";
-import {colors} from "@/styles/theme.js"; // mike 아이콘 경로
+import {
+  SAnswerContainer,
+  SHr,
+  SQuestionText,
+  SMikeBox,
+  STranscriptBox,
+  SMikeIcon,
+  SPulseEffect, QuestionBox, BtnBox
+} from "@/pages/interview/style";
+import useInterview from "@/store/useInterview.js";
+import useModalStore from "@/store/useModalStore.js";
 
-// 파동 애니메이션
-const pulse = keyframes`
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
-`;
+export default function VoiceToText({setStep}) {
+  const {
+    transcript,
+    listening,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
 
-const AnswerContainer = styled.div`
-  width: 45%;
-  height: 95%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  border-radius: 20px;
-  position: relative;
-  background: white;
-  overflow: hidden;
-  padding: 40px;
-  box-sizing: border-box;
-`;
+  const [isDone, setIsDone] = useState(false);
 
-const Hr = styled.hr`
-  width: 100%;
-  border: none;
-  border-top: 3px solid ${colors.primary};
-  margin: 20px 0;
-`;
-const QuestionText = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  color: #2b2160;
-  margin-bottom: 10px;
-`;
-
-const MikeBox = styled.div`
-  width: 8rem;
-  height: 8rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 100%;
-  background: #2b2160;
-`
-
-const TranscriptBox = styled.div`
-  width: 100%;
-  min-height: 100px;
-  padding: 10px;
-  margin-bottom: 20px;
-  white-space: pre-wrap;
-`;
-
-
-const MikeIcon = styled.img`
-  width: 80px;
-  height: 80px;
-  margin: 20px 0;
-  position: relative;
-  z-index: 1;
-  &.speaking::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(76, 175, 80, 0.5);
-    transform: translate(-50%, -50%);
-    animation: ${pulse} 1.2s infinite;
-    z-index: -1;
+  const {openModal} = useModalStore()
+  const {addAnswer} = useInterview()
+  const handleNextStet = async () => {
+    // 어떤조건하에 질문을 계속할지, 분석할지 결정하기
+    // 내가 했던 질문의 답변 저장하기
+    await addAnswer({
+      answer: transcript,
+      question : 'ex'
+    })
+    if(!isDone){
+      // 질문 계속하기
+      setStep(1)
+    }else if(isDone){
+      // 답변 분석하기
+      setStep(3)
+      openModal()
+    }
   }
-`;
-
-export default function VoiceToText() {
-  const [result, setResult] = useState("");
-  const [transcript, setTranscript] = useState("");
-  const [finalTranscript, setFinalTranscript] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [lang, setLang] = useState("ko-KR");
-
-  const recognitionRef = useRef(null);
-
+  // 컴포넌트 마운트 시 자동으로 음성 인식 시작
   useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setTranscript(
-        "이 브라우저는 Web Speech API(SpeechRecognition)를 지원하지 않습니다. (Chrome 권장)"
-      );
-      return;
+    if (browserSupportsSpeechRecognition) {
+      SpeechRecognition.startListening({
+        continuous: true,
+        language: 'ko-KR'
+      });
     }
 
-    const recog = new SpeechRecognition();
-    recog.interimResults = true;
-    recog.maxAlternatives = 1;
-    recog.continuous = true;
-    recog.lang = lang;
-
-    recog.onresult = (event) => {
-      let interimTranscript = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const r = event.results[i];
-        if (r.isFinal) {
-          setFinalTranscript((prev) => prev + r[0].transcript + " ");
-        } else {
-          interimTranscript += r[0].transcript;
-        }
-      }
-
-      // 화면에는 확정 + 실시간 중간 표시
-      setTranscript(finalTranscript + interimTranscript);
+    // 컴포넌트 언마운트 시 음성 인식 중지
+    return () => {
+      SpeechRecognition.stopListening();
     };
-
-    recog.onend = () => {
-      setIsRecording(false);
-    };
-
-    recog.onerror = (e) => {
-      console.error("SpeechRecognition error", e);
-      setTranscript("오류 발생: " + e.error);
-      setIsRecording(false);
-    };
-
-    recognitionRef.current = recog;
-    if (!recognitionRef.current) return;
-    setTranscript("말하면서 답변해주시면 됩니다!");
-    setIsRecording(true);
-    recognitionRef.current.start();
-  }, [lang, finalTranscript]);
-
+  }, [browserSupportsSpeechRecognition]);
 
   const handleStop = () => {
-    if (!recognitionRef.current) return;
-    recognitionRef.current.stop();
-    setIsRecording(false);
-    // 최종 누적 텍스트 화면에 보장
-    setResult(finalTranscript);
-    setTranscript(finalTranscript);
+    SpeechRecognition.stopListening();
+    console.log("최종 답변:", transcript);
+    setIsDone(true);
   };
 
-  return (
-    <AnswerContainer>
-      <h1>질문</h1>
-      <QuestionText>질문 예시: 자기소개를 해주세요.</QuestionText>
-      <Hr />
-      <h2>질문에 답변해주세요</h2>
-      <MikeBox>
-        <MikeIcon src={"/mike.svg"} alt="마이크" className={isRecording ? "speaking" : ""} />
-      </MikeBox>
+  if (!browserSupportsSpeechRecognition) {
+    return (
+      <SAnswerContainer>
+        <p>이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해주세요.</p>
+      </SAnswerContainer>
+    );
+  }
 
-      <TranscriptBox aria-live="polite">{transcript}</TranscriptBox>
-      {/*{result && <p>{result}</p>}*/}
-      <Button onClick={handleStop} >답변완료</Button>
-    </AnswerContainer>
+  return (
+    <SAnswerContainer>
+      <h1>질문</h1>
+      <SQuestionText>질문 예시: 자기소개를 해주세요.</SQuestionText>
+      <SHr />
+      {!isDone ? (
+        <QuestionBox>
+          <h2>질문에 답변해주세요</h2>
+          <SMikeBox>
+            {listening && <SPulseEffect />}
+            <SMikeIcon
+              src={"/mike.svg"}
+              alt="마이크"
+            />
+          </SMikeBox>
+
+          <STranscriptBox aria-live="polite">
+            {transcript || "말하면서 답변해주시면 됩니다!"}
+          </STranscriptBox>
+          <BtnBox>
+            <Button onClick={handleStop}>답변완료</Button>
+          </BtnBox>
+        </QuestionBox>
+      ) : (
+        <>
+          <h1>답변</h1>
+          <STranscriptBox aria-live="polite">
+            {transcript }
+          </STranscriptBox>
+          <BtnBox>
+            <Button onClick={handleNextStet}>다음질문받기</Button>
+          </BtnBox>
+        </>
+      )}
+    </SAnswerContainer>
   );
 }

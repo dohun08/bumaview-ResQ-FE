@@ -1,20 +1,13 @@
 import * as S from "./style.jsx";
 import ProgressBar from "@/components/ui/progressBar/index.jsx";
-import {useState, useEffect, useRef} from "react";
+import {useEffect, useRef} from "react";
+import useTimerStore from "../../../store/useTimer.js";
 
 export default function InterviewLayout({children}) {
-  const [time, setTime] = useState(100);
-  const [isAnimating, setIsAnimating] = useState(false);
   const videoRef = useRef(null);
+  const timerIntervalRef = useRef(null);
 
-  useEffect(() => {
-    // Start the animation after a small delay to ensure the component is mounted
-    const timer = setTimeout(() => {
-      setIsAnimating(true);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
+  const { time, isRunning, decreaseTime } = useTimerStore();
 
   useEffect(() => {
     // Start webcam
@@ -39,28 +32,35 @@ export default function InterviewLayout({children}) {
     };
   }, []);
 
+  // 타이머 제어 로직
   useEffect(() => {
-    if (time > 0) {
-      const timer = setInterval(() => {
-        setTime(prevTime => {
-          if (prevTime <= 0.1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prevTime - 0.1;
-        });
+    // 타이머가 실행 중이고 시간이 남아있을 때만 작동
+    if (isRunning && time > 0) {
+      timerIntervalRef.current = setInterval(() => {
+        decreaseTime(0.1);
       }, 100);
-
-      return () => clearInterval(timer);
+    } else {
+      // 타이머가 멈췄거나 시간이 0이 되면 인터벌 클리어
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
     }
-  }, [time]);
+
+    // Cleanup
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, [isRunning, time, decreaseTime]);
 
   return(
     <S.ReadQuestionContainer>
       {/*타이머*/}
       <S.Timer>
         <h2>시간안에 병준쌤을 구출해주세요!</h2>
-        <ProgressBar progress={time} setProgress={setTime} />
+        <ProgressBar />
         <p>{Math.floor(time)}s</p>
       </S.Timer>
       {/*박스*/}
@@ -74,7 +74,7 @@ export default function InterviewLayout({children}) {
         {children}
         {/*  로프와 남자 */}
         <S.RopeAndManContainer>
-          <S.ChoiAnimation $isAnimating={isAnimating}>
+          <S.ChoiAnimation $isAnimating={isRunning}>
             <S.Choi>
               <S.Rope src="/rope.svg" />
               <S.Man src="/man.svg" />

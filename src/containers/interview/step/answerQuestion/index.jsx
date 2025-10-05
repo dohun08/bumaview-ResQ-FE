@@ -12,6 +12,7 @@ import {
 } from "@/pages/interview/style";
 import useInterview from "@/store/useInterview.js";
 import useModalStore from "@/store/useModalStore.js";
+import useTimerStore from "@/store/useTimer.js";
 
 export default function VoiceToText({setStep}) {
   const {
@@ -55,10 +56,12 @@ export default function VoiceToText({setStep}) {
     };
   }, [browserSupportsSpeechRecognition]);
 
+  const {stopTimer} = useTimerStore()
   const handleStop = () => {
     SpeechRecognition.stopListening();
     console.log("최종 답변:", transcript);
     setIsDone(true);
+    stopTimer();
   };
 
   if (!browserSupportsSpeechRecognition) {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "@/components/layout/modal/index.jsx";
 import Button from "@/components/ui/button/index.jsx";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
+import useTimerStore from "@/store/useTimer.js";
 
 export default function InterviewResult() {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,9 +16,11 @@ export default function InterviewResult() {
     return () => clearTimeout(timer);
   }, []);
 
+  const {resetTimer} = useTimerStore()
   const {handleNavigate} = useNavigationWithTransition()
   const handleComplete = () =>{
     handleNavigate("/planet")
+    resetTimer();
   }
   return (
     <Modal>

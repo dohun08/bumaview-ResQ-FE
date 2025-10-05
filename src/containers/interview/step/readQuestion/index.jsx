@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
+import useTimerStore from "../../../../store/useTimer.js";
 
 const TimerContainer = styled.div`
   width: 45%;
@@ -21,7 +22,7 @@ const lineCommon = css`
   z-index: 2;
 `;
 
-// scaleX/scaleY 애니메이션
+// scaleX/scaleY 애니메이션 (8초로 조정)
 const shrinkX = keyframes`
   from { transform: scaleX(1); }
   to   { transform: scaleX(0); }
@@ -38,10 +39,10 @@ const Top = styled.div`
   left: 20px;
   height: 8px;
   width: calc(100% - 40px);
-  transform-origin: right center; /* 오른쪽 기준으로 줄어듦 */
+  transform-origin: right center;
   transform: scaleX(1);
-  ${({ run }) =>
-    run &&
+  ${({ $run }) =>
+    $run &&
     css`
       animation: ${shrinkX} 2s linear forwards;
     `}
@@ -55,10 +56,9 @@ const Right = styled.div`
   width: 8px;
   height: calc(100% - 40px);
   transform-origin: bottom center;
-  /* 위쪽 기준으로 줄어듦 */
   transform: scaleY(1);
-  ${({ run }) =>
-    run &&
+  ${({ $run }) =>
+    $run &&
     css`
       animation: ${shrinkY} 2s linear 2s forwards;
     `}
@@ -71,10 +71,10 @@ const Bottom = styled.div`
   right: 20px;
   height: 8px;
   width: calc(100% - 40px);
-  transform-origin: left center; /* 왼쪽 기준으로 줄어듦 */
+  transform-origin: left center;
   transform: scaleX(1);
-  ${({ run }) =>
-    run &&
+  ${({ $run }) =>
+    $run &&
     css`
       animation: ${shrinkX} 2s linear 4s forwards;
     `}
@@ -87,11 +87,10 @@ const Left = styled.div`
   left: 20px;
   width: 8px;
   height: calc(100% - 40px);
-  /* 아래쪽 기준으로 줄어듦 */
   transform-origin: top center;
   transform: scaleY(1);
-  ${({ run }) =>
-    run &&
+  ${({ $run }) =>
+    $run &&
     css`
       animation: ${shrinkY} 2s linear 6s forwards;
     `}
@@ -99,26 +98,31 @@ const Left = styled.div`
 
 export default function ReadQuestion({setStep}) {
   const [run, setRun] = useState(false);
+  const { setTime, startTimer } = useTimerStore();
 
   useEffect(() => {
+    // 컴포넌트 마운트 시
+
     const timer = setTimeout(() => setRun(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-  useEffect(() => {
-    const timer = setTimeout(() => setRun(true), 100);
-    const stepTimer = setTimeout(() => setStep(2), 8100); // 6.1초 후에 step 2로 이동
+
+    const stepTimer = setTimeout(() => {
+      startTimer(); // 타이머 시작
+      setStep(2); // 다음 단계로
+    }, 8100); // 8.1초 후
+
     return () => {
       clearTimeout(timer);
       clearTimeout(stepTimer);
     };
-  }, [setStep]);
+  }, [setStep, setTime, startTimer]);
+
   return (
     <TimerContainer>
       <div>문제를 읽어주세요</div>
-      <Top run={run} />
-      <Right run={run} />
-      <Bottom run={run} />
-      <Left run={run} />
+      <Top $run={run} />
+      <Right $run={run} />
+      <Bottom $run={run} />
+      <Left $run={run} />
     </TimerContainer>
   );
 }

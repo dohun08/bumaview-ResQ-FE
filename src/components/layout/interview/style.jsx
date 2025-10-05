@@ -106,11 +106,12 @@ export const ChoiAnimation = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: -580px;
+  top: -100%;
   left: 0;
   z-index: 100;
-  animation: ${({ $isAnimating }) => $isAnimating ? 'descend 100s linear forwards' : 'none'};
-  
+  animation: descend 100s linear forwards;
+  animation-play-state: ${({ $isAnimating }) => ($isAnimating ? "running" : "paused")};
+
   @keyframes descend {
     0% {
       transform: translateY(0);
@@ -119,4 +120,4 @@ export const ChoiAnimation = styled.div`
       transform: translateY(50vh); /* Move down by 50% of viewport height */
     }
   }
-`
+`;

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as S from "./style.jsx";
 import Header from "@/components/ui/header/index.jsx";
+import SpaceTravel from "@/components/ui/loading/index.jsx";
 
 export default function VideoBackground({ children, startTime = 0, duration = 4 }) {
   const videoRef = useRef(null);
@@ -70,6 +71,7 @@ export default function VideoBackground({ children, startTime = 0, duration = 4 
   return (
     <S.VideoContainer>
       <Header/>
+      <SpaceTravel/>
       <S.StyledVideo
         ref={videoRef}
         src="/video/mara.mp4"

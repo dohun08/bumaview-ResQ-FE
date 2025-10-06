@@ -9,6 +9,8 @@ import Login from "@/pages/login/index.jsx";
 import SelectPlanet from "@/pages/selectPlanet/index.jsx";
 import StarPlace from "@/pages/starPlace/index.jsx";
 import Interview from "@/pages/interview/index.jsx";
+import Admin from "@/pages/admin/index.jsx";
+import AdminQuestion from "@/pages/admin/question/index.jsx";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
        <Route path="/planet" element={<SelectPlanet />} />
         <Route path="/startplace" element={<StarPlace />} />
        <Route path="/interview/:planet/:step" element={<Interview />} />
+       <Route path="/admin" element={<Admin />} />
+       <Route path="/admin/question" element={<AdminQuestion />} />
      </Routes>
    </BrowserRouter>
   )

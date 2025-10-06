@@ -92,7 +92,7 @@ export const ScoreCircle = styled.div`
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  border: 6px solid #7FDB6C;
+  border: 6px solid ${(props)=>props.$isSuccess ? "#7FDB6C" : "#FF6B6B"};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,7 +104,7 @@ export const ScoreCircle = styled.div`
 export const Score = styled.span`
   font-size: 64px;
   font-weight: bold;
-  color: #7FDB6C;
+  color: ${(props)=>props.$isSuccess ? "#7FDB6C" : "#FF6B6B"};
   line-height: 1;
 `;
 

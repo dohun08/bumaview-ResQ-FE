@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Space from "@/components/layout/space/index.jsx";
 import Button from "@/components/ui/button/index.jsx";
+import {login} from "@/api/auth.js";
 
 const Login = () => {
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
 
-  const handleLogin = () => {
-    // 실제 로그인 로직 대신 콘솔 출
-    console.log("ID:", id, "PW:", pw);
+  const handleLogin = async () => {
+    await login({
+      user_id : id,
+      password : pw
+    })
   };
 
   return (

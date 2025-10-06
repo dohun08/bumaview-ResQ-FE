@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import * as S from "./style";
 import Button from "@/components/ui/button/index.jsx";
+import {useLocation} from "react-router-dom";
 
 const QuestionForm = ({ onCancel, onSubmit }) => {
   const [question, setQuestion] = useState("");
   const [year, setYear] = useState("");
   const [category, setCategory] = useState("");
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if(location.pathname === "/admin/question/update"){
+      // 해당 질문 가져오기
+    }
+  }, []);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!question || !year || !category) return alert("모든 항목을 입력해주세요!");

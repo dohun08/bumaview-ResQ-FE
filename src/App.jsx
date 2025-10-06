@@ -24,6 +24,7 @@ function App() {
        <Route path="/interview/:planet/:step" element={<Interview />} />
        <Route path="/admin" element={<Admin />} />
        <Route path="/admin/question" element={<AdminQuestion />} />
+       <Route path="/admin/question/update" element={<AdminQuestion />} />
      </Routes>
    </BrowserRouter>
   )

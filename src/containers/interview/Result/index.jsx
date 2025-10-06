@@ -4,9 +4,13 @@ import Modal from "@/components/layout/modal/index.jsx";
 import Button from "@/components/ui/button/index.jsx";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
 import useTimerStore from "@/store/useTimer.js";
+import {postInterview} from "@/api/interview.js";
+import {useParams} from "react-router-dom";
+import useInterview from "@/store/useInterview.js";
 
 export default function InterviewResult() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -15,12 +19,33 @@ export default function InterviewResult() {
 
     return () => clearTimeout(timer);
   }, []);
+  const params = useParams()
+  const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3
+  const {answer} = useInterview()
+
+  useEffect(() => {
+    handleSubmit();
+  }, [company_id]);
+
+  const handleSubmit = async () =>{
+    const res = await postInterview({
+      company_id : company_id,
+      question : answer.map(item=>item.question),
+      answer : answer.map(item=>item.answer),
+    });
+    if(res){
+      // res 값에 따라서 조절
+    }
+  }
 
   const {resetTimer} = useTimerStore()
   const {handleNavigate} = useNavigationWithTransition()
   const handleComplete = () =>{
-    handleNavigate("/planet")
+    if(isSuccess){
+      handleNavigate("/starPlace")
+    }
     resetTimer();
+    handleNavigate("/planet")
   }
   return (
     <Modal>
@@ -28,11 +53,11 @@ export default function InterviewResult() {
         <S.LoadingText>면접관이 평가중입니다</S.LoadingText>
       ) : (
         <S.ResultContainer>
-          <S.SuccessTitle>축하합니다!</S.SuccessTitle>
-          <S.SubTitle>병준쌤 구출에 성공하였습니다.</S.SubTitle>
+          <S.SuccessTitle>{isSuccess ? "축하합니다!" : "실패하셨습니다.."}</S.SuccessTitle>
+          <S.SubTitle>{isSuccess ? "병준쌤 구출에 성공하였습니다." : "병준쌤 구출에 실패하였습니다."}</S.SubTitle>
 
-          <S.ScoreCircle>
-            <S.Score>98</S.Score>
+          <S.ScoreCircle $isSuccess={isSuccess}>
+            <S.Score $isSuccess={isSuccess}>98</S.Score>
           </S.ScoreCircle>
 
           <S.ResultSection>

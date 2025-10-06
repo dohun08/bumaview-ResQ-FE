@@ -1,11 +1,17 @@
 import * as S from "./style";
+import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
 
-const QuestionList = ({q, toggleMenu, openMenuId, deleteQuestion, handleNavi}) => {
+const QuestionList = ({q, toggleMenu, openMenuId, deleteQuestion}) => {
+  const {handleNavigate} = useNavigationWithTransition()
+
+  const handleNavi = () =>{
+    handleNavigate("/admin/question/update")
+  }
   return (
     <S.QuestionCard>
       <S.QMark>Q.</S.QMark>
       <S.TextGroup>
-        <S.QuestionText>{q.text}</S.QuestionText>
+        <S.QuestionText>{q.question}({q.company})</S.QuestionText>
         <S.SubText>
           {q.year} <span>{q.category}</span>
         </S.SubText>

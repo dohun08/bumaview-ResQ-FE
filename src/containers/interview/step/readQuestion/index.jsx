@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import useTimerStore from "../../../../store/useTimer.js";
+import {getInterview} from "@/api/interview.js";
+import {useParams} from "react-router-dom";
 
 const TimerContainer = styled.div`
   width: 45%;
@@ -99,7 +101,19 @@ const Left = styled.div`
 export default function ReadQuestion({setStep}) {
   const [run, setRun] = useState(false);
   const { setTime, startTimer } = useTimerStore();
+  const [question, setQuestion] = useState('');
 
+  const params = useParams()
+  const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3
+  useEffect(() => {
+    if(company_id){
+      handleInterview();
+    }
+  }, [company_id]);
+  const handleInterview = async () => {
+    const res = await getInterview(company_id);
+    setQuestion(res.question)
+  }
   useEffect(() => {
     // 컴포넌트 마운트 시
 
@@ -118,7 +132,7 @@ export default function ReadQuestion({setStep}) {
 
   return (
     <TimerContainer>
-      <div>문제를 읽어주세요</div>
+      <div>{question}</div>
       <Top $run={run} />
       <Right $run={run} />
       <Bottom $run={run} />

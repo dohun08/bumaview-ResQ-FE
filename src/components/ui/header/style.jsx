@@ -1,4 +1,3 @@
-
 import styled from 'styled-components';
 import { colors } from '@/styles/theme';
 import { fontSizes } from '../../../styles/theme';
@@ -71,4 +70,13 @@ export const NavItem = styled.p`
     font-size: ${fontSizes.Body};
   color: white;
   cursor: pointer;
+`
+
+export const UserId = styled.span`
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  background: rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  letter-spacing: 0.05em;
 `

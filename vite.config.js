@@ -11,10 +11,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173, // ✅ 기본 포트
+    port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://www.jojaemin.com',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api'),

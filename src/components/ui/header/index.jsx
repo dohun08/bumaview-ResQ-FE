@@ -1,6 +1,7 @@
 import React from 'react';
 import * as S from './style';
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
+import {useUserStore} from "@/store/useUser.js";
 
 const Header = () => {
  const {handleNavigate} = useNavigationWithTransition()
@@ -20,6 +21,7 @@ const Header = () => {
             href: '/startPlace'
         }
     ]
+  const {id} = useUserStore()
   return (
       <S.HeaderContainer>
         <S.LogoContainer>
@@ -35,7 +37,11 @@ const Header = () => {
             </S.NavItem>
           )}
         </S.Nav>
-        <S.ActionButton onClick={()=>handleNavigate("/login")}>로그인</S.ActionButton>
+        {id ? (
+          <S.UserId>{id}</S.UserId>
+        ) : (
+          <S.ActionButton onClick={()=>handleNavigate("/login")}>로그인</S.ActionButton>
+        )}
       </S.HeaderContainer>
   );
 };

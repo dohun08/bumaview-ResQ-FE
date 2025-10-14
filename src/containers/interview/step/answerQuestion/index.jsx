@@ -17,6 +17,7 @@ import useModalStore from "@/store/useModalStore.js";
 import useTimerStore from "@/store/useTimerStore.js";
 import {getTailInterview} from "@/api/interview.js";
 import {useParams} from "react-router-dom";
+import useTailQuestionsStore from "@/store/useTailQuestionsStore.js";
 
 export default function VoiceToText({ step, setStep }) {
   const {
@@ -26,16 +27,31 @@ export default function VoiceToText({ step, setStep }) {
   } = useSpeechRecognition();
 
   const [isDone, setIsDone] = useState(false);
+  const [question, setQuestion] = useState("");
 
   const { openModal } = useModalStore();
   const { addAnswer, index, questions } = useInterviewStore();
+  const { addTailQuestion, tailIndex, addTailAnswer, tailQuestions } = useTailQuestionsStore();
+
+  const params = useParams();
+  const { stopTimer } = useTimerStore();
+
+  const [isTailLoading, setIsTailLoading] = useState(false);
+
+  useEffect(() => {
+    const initialQuestion =
+      index !== tailIndex
+        ? Object.keys(tailQuestions)[tailIndex]
+        : Object.keys(questions)[index];
+
+    setQuestion(initialQuestion);
+  }, []); // 의존성 배열 비움 → 최초 렌더 시 한 번만 실행
 
   const handleNextStet = async () => {
-    await addAnswer(index, transcript);
-    if (index !== 4) {
-      setStep(step-1);
+    if (tailIndex !== Object.keys(questions).length) {
+      setStep(step - 1);
     } else {
-      setStep(step+1);
+      setStep(step + 1);
       openModal();
     }
   };
@@ -53,22 +69,22 @@ export default function VoiceToText({ step, setStep }) {
     }
   }, [browserSupportsSpeechRecognition]);
 
-  const [isTailLoading, setIsTailLoading] = useState(false);
-  const params = useParams()
-  const { stopTimer } = useTimerStore();
   const handleStop = async () => {
     SpeechRecognition.stopListening();
     setIsDone(true);
     stopTimer();
-    const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3
-    setIsTailLoading(true)
-    const res = await getTailInterview(
-      company_id,
-      Object.keys(questions)[index],
-      transcript
-    );
-    setIsTailLoading(false)
-    console.log(res)
+    const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3;
+    if (tailIndex === index) {
+      await addAnswer(index, transcript);
+      setIsTailLoading(true);
+      const res = await getTailInterview(
+        company_id,
+        Object.keys(questions)[index],
+        transcript
+      );
+      addTailQuestion(res.question);
+      setIsTailLoading(false);
+    } else await addTailAnswer(tailIndex, transcript);
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -82,7 +98,7 @@ export default function VoiceToText({ step, setStep }) {
   return (
     <SAnswerContainer>
       <h1>질문</h1>
-      <SQuestionText>{Object.keys(questions)[index]}</SQuestionText>
+      <SQuestionText>{question}</SQuestionText>
       <SHr />
 
       {!isDone ? (
@@ -93,7 +109,6 @@ export default function VoiceToText({ step, setStep }) {
             <SMikeIcon src={"/mike.svg"} alt="마이크" />
           </SMikeBox>
 
-          {/* ✅ 현재 인식 중 상태 표시 */}
           {listening && (
             <p style={{ color: "#2563eb", marginTop: "8px" }}>
               현재 음성을 인식 중입니다...
@@ -111,9 +126,7 @@ export default function VoiceToText({ step, setStep }) {
       ) : (
         <>
           <h1>답변</h1>
-          <STranscriptBox aria-live="polite">
-            {transcript}
-          </STranscriptBox>
+          <STranscriptBox aria-live="polite">{transcript}</STranscriptBox>
           <BtnBox>
             <Button onClick={handleNextStet} disabled={isTailLoading}>
               {isTailLoading ? "질문 분석중" : "다음"}

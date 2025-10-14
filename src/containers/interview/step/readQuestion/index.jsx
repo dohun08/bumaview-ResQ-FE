@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
 import useTimerStore from "../../../../store/useTimerStore.js";
 import useInterview from "@/store/useInterview.js";
+import useTailQuestionsStore from "@/store/useTailQuestionsStore.js";
 
 const TimerContainer = styled.div`
   width: 45%;
@@ -133,12 +134,13 @@ export default function ReadQuestion({ step, setStep}) {
   const [run, setRun] = useState(false);
   const { setTime, startTimer } = useTimerStore();
   const {questions, index} = useInterview()
+  const {tailQuestions, tailIndex} = useTailQuestionsStore()
+
   useEffect(() => {
+    console.log("tailIndex :",tailIndex,"index :", index)
     if (Object.keys(questions).length === 0) {
       return ;
     }
-    console.log(Object.keys(questions));
-    console.log(Object.keys(questions)[index]);
     const timer = setTimeout(() => setRun(true), 100);
 
     const stepTimer = setTimeout(() => {
@@ -161,7 +163,12 @@ export default function ReadQuestion({ step, setStep}) {
   }
   return (
     <TimerContainer>
-      <QuestionText>{Object.keys(questions)[index]}</QuestionText>
+      <QuestionText>
+        {tailIndex !== index ?
+          Object.keys(tailQuestions)[tailIndex]
+          : Object.keys(questions)[index]
+        }
+      </QuestionText>
       <Top $run={run} />
       <Right $run={run} />
       <Bottom $run={run} />

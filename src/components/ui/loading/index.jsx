@@ -1,6 +1,5 @@
 import React from "react";
 import {useNavigationTransitionStore} from "@/store/useNavigationTransition.js";
-import {useLoadingStore} from "@/store/useLoading.js";
 
 const overlayStyle = {
   position: "fixed",
@@ -17,8 +16,7 @@ const overlayStyle = {
 
 export default function SpaceTravel() {
   const {showTravel} = useNavigationTransitionStore()
-  const {isLoading} = useLoadingStore()
-  if (showTravel || isLoading) {
+  if (showTravel) {
     return (
       <div style={overlayStyle}>
         <img src="/SpaceTravel.gif" alt="Space Travel" style={{width: 200, height: 200}}/>

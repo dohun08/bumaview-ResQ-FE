@@ -8,7 +8,7 @@ export const SpaceContainer = styled.div`
 `
 export const Body = styled.div`
     width: 100vw;
-    height: calc(100vh - 10vh);
+    height: ${(props)=>props.$showUnBox ? "calc(100vh - 10vh)" : "100vh"};
     display: flex;
     flex-direction: column;
   justify-content: center;   

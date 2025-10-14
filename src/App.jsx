@@ -12,6 +12,7 @@ import StarPlace from "@/pages/starPlace/index.jsx";
 import Interview from "@/pages/interview/index.jsx";
 import Admin from "@/pages/admin/index.jsx";
 import AdminQuestion from "@/pages/admin/question/index.jsx";
+import Loading from "@/components/ui/loading2/index.jsx";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <GlobalStyles />
+        <Loading />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/login" element={<Login />} />

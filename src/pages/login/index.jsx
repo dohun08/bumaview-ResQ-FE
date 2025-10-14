@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as S from './style';
 import Space from "@/components/layout/space/index.jsx";
 import Button from "@/components/ui/button/index.jsx";
-import { useAuth } from "@/hooks/useLogin.js";
+import { useAuth } from "@/hooks/useAuth.js";
 
 const Login = () => {
   const [id, setId] = useState("");

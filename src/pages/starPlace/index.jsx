@@ -3,11 +3,13 @@ import VideoBackground from '@/components/layout/video-background';
 import {getProgress} from "@/api/starPlace.js";
 
 export default function StarPlace() {
-  const [videoNumber, setVideoNumber] = useState(1);
+  const [videoNumber, setVideoNumber] = useState(0);
   const startTime = (videoNumber - 1) * 4;
   const getCurrentProgress = async () => {
     const res = await getProgress();
-    setVideoNumber(res.result);
+    if(res){
+      setVideoNumber(res);
+    }
   }
   useEffect(() => {
     getCurrentProgress();

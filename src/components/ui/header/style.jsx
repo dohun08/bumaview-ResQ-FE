@@ -74,9 +74,32 @@ export const NavItem = styled.p`
 
 export const UserId = styled.span`
   color: #fff;
+  cursor:pointer;
   font-weight: bold;
   font-size: 1.1rem;
   background: rgba(0,0,0,0.3);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   letter-spacing: 0.05em;
 `
+
+export const LogoutButton = styled.button`
+  position: absolute;
+  top: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  width: max-content;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background 0.2s;
+  z-index: 10;
+
+  &:hover {
+    background: #444;
+  }
+`;

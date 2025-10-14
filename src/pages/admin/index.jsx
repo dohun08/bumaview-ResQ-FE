@@ -1,66 +1,139 @@
-import Space from "@/components/layout/space/index.jsx";
-import * as S from "./style.jsx"
 import React, {useState} from "react";
+import Space from "@/components/layout/space/index.jsx";
+import * as S from "./style.jsx";
 import Button from "@/components/ui/button/index.jsx";
 import QuestionList from "@/containers/admin/card/index.jsx";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
-import useDebounce from "@/hooks/useDebounce.js";
-import {searchQuestion, deleteQuestion} from "@/api/admin.js";
+import { CATEGORY_OPTIONS } from "@/constants/categoryOptions";
+import { COMPANY_RES } from "@/constants/companyList";
+import {useQuestions, useQuestionMutations} from "@/hooks/useQuestion";
 
 export default function Admin() {
-  const [questions, setQuestions] = useState([
-    { id: 1, question: "뭐뭐에 대해서 설명해주세요", year: 2025, category: "프론트엔드", company:"달파" },
-    { id: 2, question: "뭐뭐에 대해서 설명해주세요", year: 2025, category: "프론트엔드", company:"달파" },
-    { id: 3, question: "뭐뭐에 대해서 설명해주세요", year: 2025, category: "프론트엔드", company:"달파" },
-    { id: 4, question: "뭐뭐에 대해서 설명해주세요", year: 2025, category: "프론트엔드", company:"달파" },
-  ]);
-
-  const handleDeleteQuestion = async (id) => {
-    const res = await deleteQuestion(id);
-    if(res){
-      debounce();
-    }
-  };
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
+  const [company, setCompany] = useState("");
+  const [year, setYear] = useState("");
+  const [category, setCategory] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  const { handleNavigate } = useNavigationWithTransition();
+  const {deleteQuestion} = useQuestionMutations()
+
+  const { data, isLoading, isError } = useQuestions({
+    company_id: company,
+    year,
+    category,
+    page,
+    size
+  });
+
+  const questions = data?.content || [];
+  const total = data?.total_pages || 0;
 
   const toggleMenu = (id) => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
-  const {handleNavigate} = useNavigationWithTransition()
-  const handleNavi = () =>{
-    handleNavigate("/admin/question")
-  }
 
-  const handleSearch = async () =>{
-    const data = await searchQuestion()
-    setQuestions(data);
-  }
+  const handleNavi = () => {
+    handleNavigate("/admin/question");
+  };
 
-  const debounce = useDebounce(handleSearch, 200)
+  const handleDelete = async (id) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await deleteQuestion.mutateAsync(id);
+    }
+  };
+
+  const handlePageChange = (newPage) => setPage(newPage);
+  if (isError) return <div>Error loading questions</div>;
 
   return (
-      <Space>
-        <S.AdminContainer>
-          <S.AdminHeader>
-            <img src={'/spacevote.svg'} alt={"인공위성"} />
-          </S.AdminHeader>
+    <Space showUnBox={false}>
+      <S.AdminContainer>
+        <S.AdminHeader>
+          <img src={"/spacevote.svg"} alt={"인공위성"} />
+        </S.AdminHeader>
 
-          <S.Container>
-            <S.SearchInput onChange={debounce} placeholder="질문을 검색해주세요" />
-            <Button onClick={handleNavi}>질문 추가</Button>
-
-            <S.Divider />
-            {questions.map((q) => (
-              <QuestionList
-                key={q.id}
-                q={q}
-                toggleMenu={toggleMenu}
-                openMenuId={openMenuId}
-                deleteQuestion={handleDeleteQuestion}
-              />
+        <S.Container>
+          <S.SearchSelect
+            value={company}
+            onChange={(e) => {
+              setCompany(e.target.value);
+              setPage(0);
+            }}
+          >
+            <option value="">전체 회사</option>
+            {COMPANY_RES.map(company => (
+              <option key={company.id} value={company.id}>
+                {company.name}
+              </option>
             ))}
-          </S.Container>
-        </S.AdminContainer>
-      </Space>
-    );
+          </S.SearchSelect>
+
+          <S.SearchInput
+            value={year}
+            onChange={(e) => {
+              setYear(e.target.value);
+              setPage(0);
+            }}
+            placeholder="연도"
+            type="number"
+          />
+
+          <S.SearchSelect
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(0);
+            }}
+          >
+            {CATEGORY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </S.SearchSelect>
+
+          <Button onClick={handleNavi}>질문 추가</Button>
+
+          {questions && questions.length > 0 ? questions.map((q) => (
+            <QuestionList
+              key={q.id}
+              q={q}
+              toggleMenu={toggleMenu}
+              openMenuId={openMenuId}
+              deleteQuestion={handleDelete}
+            />
+          ))
+            :
+            isLoading ?
+            <div style={{margin:"4rem 1rem"}}>불러오는 중...</div>
+              : <div style={{margin:"4rem 1rem"}}>질문이 없습니다.</div>
+          }
+
+          <S.PaginationWrapper>
+            <Button
+              onClick={() => {
+                if(page === 0) return ;
+                handlePageChange(page - 1)
+              }}
+            >
+              이전
+            </Button>
+            <S.PaginationInfo>
+              {page+1} / {total}
+            </S.PaginationInfo>
+            <Button
+              onClick={() => {
+                if(page >= total) return;
+                handlePageChange(page + 1)
+              }}
+            >
+              다음
+            </Button>
+          </S.PaginationWrapper>
+        </S.Container>
+      </S.AdminContainer>
+    </Space>
+  );
 }

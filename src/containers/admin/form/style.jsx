@@ -31,20 +31,22 @@ export const Input = styled.input`
   }
 `;
 
-export const Select = styled.select`
+
+export const SearchSelect = styled.select`
   width: 100%;
-  padding: 14px 18px;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  font-size: 15px;
-  color: ${({ value }) => (value ? "#333" : "#bbb")};
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
   background-color: #fff;
-  appearance: none;
+  color: #333;
   outline: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='14' width='14' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
+  
+  &:focus {
+    border-color: #666;
+  }
 `;
+
 
 export const ButtonRow = styled.div`
   display: grid;

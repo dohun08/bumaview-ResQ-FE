@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "@/components/layout/modal/index.jsx";
 import Button from "@/components/ui/button/index.jsx";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
-import useTimerStore from "@/store/useTimer.js";
+import useTimerStore from "@/store/useTimerStore.js";
 import {postInterview} from "@/api/interview.js";
 import {useParams} from "react-router-dom";
 import useInterview from "@/store/useInterview.js";
@@ -13,6 +13,7 @@ export default function InterviewResult() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);

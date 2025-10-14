@@ -1,5 +1,5 @@
 import * as S from "./style";
-import useTimerStore from "../../../store/useTimer.js";
+import useTimerStore from "../../../store/useTimerStore.js";
 
 export default function ProgressBar() {
   // Zustand store에서 time 가져오기

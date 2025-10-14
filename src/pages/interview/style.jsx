@@ -16,7 +16,7 @@ export const SAnswerContainer = styled.div`
   border-radius: 20px;
   position: relative;
   background: white;
-  overflow: hidden;
+  overflow: auto;
   padding: 40px;
   box-sizing: border-box;
 `;
@@ -48,6 +48,9 @@ export const SQuestionText = styled.div`
   font-weight: bold;
   color: #2b2160;
   margin-bottom: 10px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  
 `;
 
 export const SMikeBox = styled.div`

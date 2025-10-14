@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {useNavigationTransitionStore} from "@/store/useNavigationTransition.js";
-import {useUserStore} from "@/store/useUser.js";
+import {useNavigationTransitionStore} from "@/store/useNavigationTransitionStore.js";
+import {useUserStore} from "@/store/useUserStore.js";
 
 export default function useNavigationWithTransition() {
   const navigate = useNavigate();

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import styled, { keyframes, css } from "styled-components";
-import useTimerStore from "../../../../store/useTimer.js";
-import {getInterview} from "@/api/interview.js";
-import {useParams} from "react-router-dom";
+import useTimerStore from "../../../../store/useTimerStore.js";
+import useInterview from "@/store/useInterview.js";
 
 const TimerContainer = styled.div`
   width: 45%;
@@ -98,41 +97,71 @@ const Left = styled.div`
     `}
 `;
 
-export default function ReadQuestion({setStep}) {
+const QuestionText = styled.p`
+  width: 80%;
+  text-align: center;
+  word-break: keep-all;    
+  overflow-wrap: break-word;
+  line-height: 1.5;
+`
+
+const dots = keyframes`
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+`;
+
+export const LoadingText = styled.p`
+  font-size: 20px;
+  font-weight: bold;
+  color: #2b2160;
+  text-align: center;
+  margin: 2rem 0;
+
+  &::after {
+    content: '';
+    animation: ${dots} 2s steps(1) infinite;
+    display: inline-block;
+    width: 30px;
+    text-align: left;
+  }
+`;
+
+export default function ReadQuestion({ step, setStep}) {
   const [run, setRun] = useState(false);
   const { setTime, startTimer } = useTimerStore();
-  const [question, setQuestion] = useState('');
-
-  const params = useParams()
-  const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3
+  const {questions, index} = useInterview()
   useEffect(() => {
-    if(company_id){
-      handleInterview();
+    if (Object.keys(questions).length === 0) {
+      return ;
     }
-  }, [company_id]);
-  const handleInterview = async () => {
-    const res = await getInterview(company_id);
-    setQuestion(res.question)
-  }
-  useEffect(() => {
-    // 컴포넌트 마운트 시
-
+    console.log(Object.keys(questions));
+    console.log(Object.keys(questions)[index]);
     const timer = setTimeout(() => setRun(true), 100);
 
     const stepTimer = setTimeout(() => {
       startTimer(); // 타이머 시작
-      setStep(2); // 다음 단계로
+      setStep(step + 1); // 다음 단계로
     }, 8100); // 8.1초 후
 
     return () => {
       clearTimeout(timer);
       clearTimeout(stepTimer);
-    };
-  }, [setStep, setTime, startTimer]);
+    }
+  }, [Object.keys(questions).length, step, setStep, setTime, startTimer]);
 
+  if (Object.keys(questions).length === 0) {
+    return (
+      <TimerContainer>
+        <LoadingText>로딩중입니다</LoadingText>
+      </TimerContainer>
+    )
+  }
   return (
     <TimerContainer>
-      <div>{question}</div>
+      <QuestionText>{Object.keys(questions)[index]}</QuestionText>
       <Top $run={run} />
       <Right $run={run} />
       <Bottom $run={run} />

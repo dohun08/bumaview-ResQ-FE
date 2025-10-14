@@ -12,11 +12,13 @@ import {
   QuestionBox,
   BtnBox
 } from "@/pages/interview/style";
-import useInterview from "@/store/useInterview.js";
+import useInterviewStore from "@/store/useInterview.js";
 import useModalStore from "@/store/useModalStore.js";
-import useTimerStore from "@/store/useTimer.js";
+import useTimerStore from "@/store/useTimerStore.js";
+import {getTailInterview} from "@/api/interview.js";
+import {useParams} from "react-router-dom";
 
-export default function VoiceToText({ setStep }) {
+export default function VoiceToText({ step, setStep }) {
   const {
     transcript,
     listening,
@@ -24,20 +26,16 @@ export default function VoiceToText({ setStep }) {
   } = useSpeechRecognition();
 
   const [isDone, setIsDone] = useState(false);
-  const [connectionMsg, setConnectionMsg] = useState(""); // ✅ 연결 상태 메시지 상태
 
   const { openModal } = useModalStore();
-  const { addAnswer } = useInterview();
+  const { addAnswer, index, questions } = useInterviewStore();
 
   const handleNextStet = async () => {
-    await addAnswer({
-      answer: transcript,
-      question: 'ex'
-    });
-    if (!isDone) {
-      setStep(1);
-    } else if (isDone) {
-      setStep(3);
+    await addAnswer(index, transcript);
+    if (index !== 4) {
+      setStep(step-1);
+    } else {
+      setStep(step+1);
       openModal();
     }
   };
@@ -49,23 +47,28 @@ export default function VoiceToText({ setStep }) {
         language: 'ko-KR'
       });
 
-      // ✅ 연결 알림 표시
-      setConnectionMsg("🎙️ 음성 인식이 시작되었습니다!");
-      const timer = setTimeout(() => setConnectionMsg(""), 2000); // 2초 후 사라짐
-
       return () => {
-        clearTimeout(timer);
         SpeechRecognition.stopListening();
       };
     }
   }, [browserSupportsSpeechRecognition]);
 
+  const [isTailLoading, setIsTailLoading] = useState(false);
+  const params = useParams()
   const { stopTimer } = useTimerStore();
-  const handleStop = () => {
+  const handleStop = async () => {
     SpeechRecognition.stopListening();
-    console.log("최종 답변:", transcript);
     setIsDone(true);
     stopTimer();
+    const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3
+    setIsTailLoading(true)
+    const res = await getTailInterview(
+      company_id,
+      Object.keys(questions)[index],
+      transcript
+    );
+    setIsTailLoading(false)
+    console.log(res)
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -79,15 +82,8 @@ export default function VoiceToText({ setStep }) {
   return (
     <SAnswerContainer>
       <h1>질문</h1>
-      <SQuestionText>질문 예시: 자기소개를 해주세요.</SQuestionText>
+      <SQuestionText>{Object.keys(questions)[index]}</SQuestionText>
       <SHr />
-
-      {/* ✅ 음성 인식 연결 메시지 표시 */}
-      {connectionMsg && (
-        <p style={{ color: "#16a34a", fontWeight: "600", marginBottom: "1rem" }}>
-          {connectionMsg}
-        </p>
-      )}
 
       {!isDone ? (
         <QuestionBox>
@@ -119,7 +115,9 @@ export default function VoiceToText({ setStep }) {
             {transcript}
           </STranscriptBox>
           <BtnBox>
-            <Button onClick={handleNextStet}>다음질문받기</Button>
+            <Button onClick={handleNextStet} disabled={isTailLoading}>
+              {isTailLoading ? "질문 분석중" : "다음"}
+            </Button>
           </BtnBox>
         </>
       )}

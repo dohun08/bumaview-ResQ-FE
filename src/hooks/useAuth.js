@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { login, logout } from "@/api/auth.js";
-import { useUserStore } from "@/store/useUser.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
-import {useLoadingStore} from "@/store/useLoading.js";
+import {useLoadingStore} from "@/store/useLoadingStore.js";
 
 export function useAuth() {
   const { setUser, clearUser } = useUserStore();

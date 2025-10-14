@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as S from './style';
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
-import { useUserStore } from "@/store/useUser.js";
+import { useUserStore } from "@/store/useUserStore.js";
 import { useAuth } from "@/hooks/useAuth.js";
 
 const Header = () => {

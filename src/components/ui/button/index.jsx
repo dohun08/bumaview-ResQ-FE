@@ -8,7 +8,6 @@ export const ButtonContainer = styled.button`
   width: 100%;
   padding: 0 16px;
   cursor: pointer;
-
   background: linear-gradient(
     90deg,
     rgba(21, 0, 80, 0.8) 0%,
@@ -35,11 +34,17 @@ export const ButtonContainer = styled.button`
   &:active {
     box-shadow: 0 2px 6px rgba(21, 0, 80, 0.3);
   }
+  ${props => props.$disabled && `
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+  `}
 `;
 
-export default function Button({onClick, children}){
+
+export default function Button({onClick, children, disabled}){
   return(
-    <ButtonContainer onClick={onClick}>
+    <ButtonContainer $disabled={disabled} onClick={onClick}>
       {children}
     </ButtonContainer>
   )

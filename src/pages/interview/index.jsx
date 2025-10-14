@@ -7,6 +7,7 @@ import First from "@/containers/interview/fist/index.jsx";
 import InterviewLayout from "@/components/layout/interview/index.jsx";
 import AnswerQuestion from "@/containers/interview/step/answerQuestion/index.jsx";
 import InterviewResult from "@/containers/interview/Result/index.jsx";
+import CultureFit from "@/components/ui/culturefit/index.jsx"
 
 export default function Interview() {
   const {location} = useNavigationWithTransition()
@@ -16,9 +17,12 @@ export default function Interview() {
   const [step, setStep] = useState(0);
 
   const {openModal, closeModal} = useModalStore()
+  const handleNextStep = () =>{
+    closeModal()
+    setStep(step+1)
+  }
   const handleStartClick = () => {
     setIsFirst(false)
-    closeModal()
     setStep(1)
   }
   useEffect(() => {
@@ -34,9 +38,10 @@ export default function Interview() {
             />
       }
       <InterviewLayout>
-        {step === 1 && <ReadQuestion setStep={setStep} />}
-        {step === 2 && <AnswerQuestion setStep={setStep} />}
-        {step === 3 && <InterviewResult />}
+        {step === 1 && <CultureFit handleNextStep={handleNextStep} company={planetData.name} />}
+        {step === 2 && <ReadQuestion step={step} setStep={setStep} />}
+        {step === 3 && <AnswerQuestion step={step} setStep={setStep} />}
+        {step === 4 && <InterviewResult />}
       </InterviewLayout>
     </Planet>
   )

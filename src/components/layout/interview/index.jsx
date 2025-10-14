@@ -1,7 +1,7 @@
 import * as S from "./style.jsx";
 import ProgressBar from "@/components/ui/progressBar/index.jsx";
 import {useEffect, useRef} from "react";
-import useTimerStore from "../../../store/useTimer.js";
+import useTimerStore from "../../../store/useTimerStore.js";
 
 export default function InterviewLayout({children}) {
   const videoRef = useRef(null);

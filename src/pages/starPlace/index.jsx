@@ -8,7 +8,7 @@ export default function StarPlace() {
   const getCurrentProgress = async () => {
     const res = await getProgress();
     if(res){
-      setVideoNumber(res);
+      setVideoNumber(res.star_count);
     }
   }
   useEffect(() => {

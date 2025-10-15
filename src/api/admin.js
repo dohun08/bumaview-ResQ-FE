@@ -6,10 +6,12 @@ import axiosInstance from "@/lib/axiosInstance.js";
 // search 할 때, 질문명으로는?
 // update할 때, 해당 질문의 자세한 정보를 가져와야함
 export const addQuestion = (question)=>axiosInstance.post("/question/addition", question)
+
 export const deleteQuestion = async (questionId)=>{
   const res = await axiosInstance.delete(`/question/delete/${questionId}`);
   return res.data;
 }
+
 export const updateQuestion = (question)=>axiosInstance.put(`/question/update`, question)
 
 export const searchQuestion = async (company_id, year, category, page = 1, size = 10) => {
@@ -28,11 +30,41 @@ export const searchQuestion = async (company_id, year, category, page = 1, size 
     return null;
   }
 }
+export const uploadFile = async (file) => {
+  console.log(file);
+  const res = await axiosInstance.post("/question/bulk-upload", file, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
-export const uploadFile = async (file) =>{
-  const res = await axiosInstance.post("/file/upload", file)
-  if (res.status !== 200){
-    alert("실패")
-  }
-  return res.data
+  return res.data;
+};
+
+import axios from "axios";
+
+export async function downloadFile() {
+  const res = await axios.get(
+    "http://www.jojaemin.com/question/sample-file",
+    {
+      responseType: "blob",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }
+  );
+
+  // 파일명 파싱
+  const cd = res.headers["content-disposition"] || "";
+  const match = cd.match(/filename\*?=(?:UTF-8''|")?([^\";]+)/i);
+  const filename = match ? decodeURIComponent(match[1]) : "question_upload_sample.xlsx";
+
+  const blobUrl = URL.createObjectURL(new Blob([res.data]));
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(blobUrl);
 }

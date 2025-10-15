@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useRef} from "react";
 import Space from "@/components/layout/space/index.jsx";
 import * as S from "./style.jsx";
 import Button from "@/components/ui/button/index.jsx";
@@ -7,6 +7,7 @@ import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js"
 import { CATEGORY_OPTIONS } from "@/constants/categoryOptions";
 import { COMPANY_RES } from "@/constants/companyList";
 import {useQuestions, useQuestionMutations} from "@/hooks/useQuestion";
+import { downloadFile, uploadFile } from "@/api/admin.js"; // 추가
 
 export default function Admin() {
   const [page, setPage] = useState(0);
@@ -15,11 +16,12 @@ export default function Admin() {
   const [year, setYear] = useState("");
   const [category, setCategory] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
+  const fileInputRef = useRef(null);
 
   const { handleNavigate } = useNavigationWithTransition();
   const {deleteQuestion} = useQuestionMutations()
 
-  const { data, isLoading, isError } = useQuestions({
+  const { data,refetch, isLoading, isError } = useQuestions({
     company_id: company,
     year,
     category,
@@ -44,12 +46,53 @@ export default function Admin() {
     }
   };
 
+  // 파일 다운로드 핸들러
+  const handleFileDownload = async () => {
+    try {
+      await downloadFile();
+    } catch (error) {
+      console.error("파일 다운로드 에러:", error);
+    }
+  };
+
+  // 파일 업로드 핸들러
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      await uploadFile(formData);
+      setPage(0)
+      refetch();
+    } catch (error) {
+      console.error("파일 업로드 에러:", error);
+    }
+    e.target.value = "";
+  };
+
   const handlePageChange = (newPage) => setPage(newPage);
   if (isError) return <div>Error loading questions</div>;
 
   return (
     <Space showUnBox={false}>
       <S.AdminContainer>
+        {/* 절대 위치 버튼 컨테이너 */}
+        <S.AdminAbsoluteButtons>
+          <Button onClick={handleFileDownload}>파일 다운로드</Button>
+          <input
+            type="file"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
+          <Button onClick={handleFileInputClick}>파일 업로드</Button>
+        </S.AdminAbsoluteButtons>
+
         <S.AdminHeader>
           <img src={"/spacevote.svg"} alt={"인공위성"} />
         </S.AdminHeader>

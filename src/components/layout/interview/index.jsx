@@ -3,7 +3,7 @@ import ProgressBar from "@/components/ui/progressBar/index.jsx";
 import {useEffect, useRef} from "react";
 import useTimerStore from "../../../store/useTimerStore.js";
 
-export default function InterviewLayout({children}) {
+export default function InterviewLayout({children, step}) {
   const videoRef = useRef(null);
   const timerIntervalRef = useRef(null);
 
@@ -74,12 +74,12 @@ export default function InterviewLayout({children}) {
         {children}
         {/*  로프와 남자 */}
         <S.RopeAndManContainer>
-          <S.ChoiAnimation $isAnimating={isRunning}>
+          {step !== 4 && <S.ChoiAnimation $isAnimating={isRunning}>
             <S.Choi>
               <S.Rope src="/rope.svg" />
               <S.Man src="/man.svg" />
             </S.Choi>
-          </S.ChoiAnimation>
+          </S.ChoiAnimation>}
         </S.RopeAndManContainer>
       </S.Content>
     </S.ReadQuestionContainer>

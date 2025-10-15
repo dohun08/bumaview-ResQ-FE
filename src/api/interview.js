@@ -53,3 +53,12 @@ export const getTailInterview = async (company_id, question, answer) => {
   })
   return res
 }
+
+export const getProgress = async (company_id) =>{
+  const res = await axiosInstance.get("/interview/progress", {
+    params:{
+      company_id : company_id
+    }
+  })
+  return res
+}

@@ -8,8 +8,9 @@ import { postInterview } from "@/api/interview.js";
 import { useParams } from "react-router-dom";
 import useInterviewStore from "@/store/useInterview.js";
 import useTailQuestionsStore from "@/store/useTailQuestionsStore.js";
+import Character from "@/components/ui/character/Index.jsx";
 
-export default function InterviewResult() {
+export default function InterviewResult({response}) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [score, setScore] = useState(0);
@@ -25,7 +26,21 @@ export default function InterviewResult() {
   const { handleNavigate } = useNavigationWithTransition();
 
   useEffect(() => {
-    handleSubmit();
+    if(response){
+      setIsLoading(false)
+      const { score: apiScore, feedback, overall_evaluation, strength } = response.result;
+      const computedScore = apiScore * 20;
+      setScore(computedScore);
+      setFeedback(
+        Array.isArray(feedback) ? feedback.join("\n") : String(feedback || "")
+      );
+      setOverallEvaluation(String(overall_evaluation || ""));
+      setStrength(
+        Array.isArray(strength) ? strength.join("\n") : String(strength || "")
+      );
+      setIsSuccess(apiScore >= 3 && time > 0);
+    }
+    else handleSubmit();
   }, [company_id]);
 
   const handleSubmit = async () => {
@@ -38,7 +53,7 @@ export default function InterviewResult() {
     );
     if (res && res.result) {
       const { score: apiScore, feedback, overall_evaluation, strength } = res.result;
-      const computedScore = apiScore * 25;
+      const computedScore = apiScore * 20;
       setScore(computedScore);
       setFeedback(
         Array.isArray(feedback) ? feedback.join("\n") : String(feedback || "")
@@ -68,6 +83,8 @@ export default function InterviewResult() {
       {isLoading ? (
         <S.LoadingText>면접관이 평가중입니다</S.LoadingText>
       ) : (
+        <>
+        <Character isSuccess={isSuccess} />
         <S.ResultContainer>
           <S.SuccessTitle>{isSuccess ? "축하합니다!" : "실패하셨습니다.."}</S.SuccessTitle>
           <S.SubTitle>{isSuccess ? "병준쌤 구출에 성공하였습니다." : "병준쌤 구출에 실패하였습니다."}</S.SubTitle>
@@ -89,6 +106,7 @@ export default function InterviewResult() {
             <Button onClick={handleComplete}>완료</Button>
           </S.ButtonContainer>
         </S.ResultContainer>
+        </>
       )}
     </Modal>
   );

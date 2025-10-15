@@ -165,7 +165,7 @@ export default function ReadQuestion({ step, setStep}) {
     <TimerContainer>
       <QuestionText>
         {tailIndex !== index ?
-          Object.keys(tailQuestions)[tailIndex]
+          Object.keys(tailQuestions)[tailIndex] + "(꼬리질문)"
           : Object.keys(questions)[index]
         }
       </QuestionText>

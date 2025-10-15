@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import * as S from "./style";
-import SelectStep from "./selectStep";
+import { getProgress } from "@/api/interview.js";
+import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
 
 const PlanetModal = ({ planet, onClose, isOpen }) => {
-  const [showSteps, setShowSteps] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -24,9 +24,24 @@ const PlanetModal = ({ planet, onClose, isOpen }) => {
     };
   }, [isOpen, onClose]);
 
-  const handlePlanetBg = () => {
-    setShowSteps(true)
-  }
+  const {handleNavigate} = useNavigationWithTransition()
+  const handlePlanetBg = async () => {
+    const company_id = planet.name === "핀다" ? 1 : planet.name === "달파" ? 2 : 3;
+    try {
+      const res = await getProgress(company_id);
+      if (res && res.company_id) {
+        handleNavigate(`/interview/${planet.name}/${1}`, {state : {
+            planet,
+          result : true,
+            response : res
+          }});
+      }
+    } catch (error) {
+      console.error(error, 1)
+      handleNavigate(`/interview/${planet.name}/${1}`, {state : {planet}});
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -39,15 +54,12 @@ const PlanetModal = ({ planet, onClose, isOpen }) => {
         />
         <S.PlanetTitle>{planet.name}</S.PlanetTitle>
         <S.PlanetDescription>
-          {planet.name}에 대한 설명이 여기에 들어갑니다.{!showSteps && '면접을 시작하려면 아래 버튼을 클릭하세요.'}
+          {planet.name}에 대한 설명이 여기에 들어갑니다.
+          면접을 시작하려면 아래 버튼을 클릭하세요.
         </S.PlanetDescription>
-        {showSteps ? (
-          <SelectStep planet={planet} />
-        ) : (
-          <S.StartButton onClick={handlePlanetBg}>
-            면접 시작하기
-          </S.StartButton>
-        )}
+        <S.StartButton onClick={handlePlanetBg}>
+          면접시작하기
+        </S.StartButton>
       </S.ModalContent>
     </S.ModalOverlay>
   );

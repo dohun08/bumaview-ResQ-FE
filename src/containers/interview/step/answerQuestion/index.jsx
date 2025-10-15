@@ -41,7 +41,7 @@ export default function VoiceToText({ step, setStep }) {
   useEffect(() => {
     const initialQuestion =
       index !== tailIndex
-        ? Object.keys(tailQuestions)[tailIndex]
+        ? Object.keys(tailQuestions)[tailIndex] + "(꼬리질문)"
         : Object.keys(questions)[index];
 
     setQuestion(initialQuestion);

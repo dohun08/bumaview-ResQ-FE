@@ -4,7 +4,7 @@ import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js"
 
 export default function Main() {
   const {handleNavigate} = useNavigationWithTransition()
-  const handleStartClick = () => {
+  const handleStartClick = async () => {
     handleNavigate("/planet")
   }
   return(

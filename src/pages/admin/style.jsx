@@ -59,11 +59,6 @@ export const SearchSelect = styled.select`
   }
 `;
 
-export const Divider = styled.hr`
-  margin: 20px 0;
-  border: none;
-  border-top: 1px solid #eee;
-`;
 
 export const PaginationWrapper = styled.div`
   display: grid;
@@ -78,4 +73,13 @@ export const PaginationInfo = styled.span`
   text-align: center;
   font-size: 1.1rem;
   margin: 0 1rem;
+`;
+
+export const AdminAbsoluteButtons = styled.div`
+  position: absolute;
+  top: 15%;
+  right: 5%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;

@@ -28,6 +28,12 @@ export default function Interview() {
   useEffect(() => {
     openModal()
   }, []);
+  useEffect(() => {
+    if(location.state.state.result){
+      setStep(4)
+      setIsFirst(false)
+    }
+  }, []);
 
   return(
     <Planet bgImage={planetData.bg}>
@@ -41,7 +47,7 @@ export default function Interview() {
         {step === 1 && <CultureFit handleNextStep={handleNextStep} company={planetData.name} />}
         {step === 2 && <ReadQuestion step={step} setStep={setStep} />}
         {step === 3 && <AnswerQuestion step={step} setStep={setStep} />}
-        {step === 4 && <InterviewResult />}
+        {step === 4 && <InterviewResult response={location.state.state.response} />}
       </InterviewLayout>
     </Planet>
   )

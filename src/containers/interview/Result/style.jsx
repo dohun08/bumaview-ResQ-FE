@@ -129,15 +129,16 @@ export const ResultList = styled.ul`
 `;
 
 export const ResultItem = styled.li`
-  font-size: 16px;
+font-size: 16px;
+color: #666;
+margin-bottom: 0.5rem;
+padding-left: 0;
+word-break: keep-all;
+
+&::before {
+  content: '- ';
   color: #666;
-  margin-bottom: 0.5rem;
-  padding-left: 0;
-  
-  &::before {
-    content: '- ';
-    color: #666;
-  }
+}
 `;
 
 export const ButtonContainer = styled.div`

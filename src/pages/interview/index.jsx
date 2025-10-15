@@ -43,7 +43,7 @@ export default function Interview() {
               handleStartClick={handleStartClick}
             />
       }
-      <InterviewLayout>
+      <InterviewLayout step={step}>
         {step === 1 && <CultureFit handleNextStep={handleNextStep} company={planetData.name} />}
         {step === 2 && <ReadQuestion step={step} setStep={setStep} />}
         {step === 3 && <AnswerQuestion step={step} setStep={setStep} />}

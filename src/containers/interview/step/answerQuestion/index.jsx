@@ -109,12 +109,6 @@ export default function VoiceToText({ step, setStep }) {
             <SMikeIcon src={"/mike.svg"} alt="마이크" />
           </SMikeBox>
 
-          {listening && (
-            <p style={{ color: "#2563eb", marginTop: "8px" }}>
-              현재 음성을 인식 중입니다...
-            </p>
-          )}
-
           <STranscriptBox aria-live="polite">
             {transcript || "말하면서 답변해주시면 됩니다!"}
           </STranscriptBox>

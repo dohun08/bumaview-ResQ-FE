@@ -109,7 +109,7 @@ export const ChoiAnimation = styled.div`
   top: -100%;
   left: 0;
   z-index: 100;
-  animation: descend 100s linear forwards;
+  animation: descend 105s linear forwards;
   animation-play-state: ${({ $isAnimating }) => ($isAnimating ? "running" : "paused")};
 
   @keyframes descend {

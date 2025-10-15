@@ -1,12 +1,12 @@
 import * as S from "./style.jsx";
 import ProgressBar from "@/components/ui/progressBar/index.jsx";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import useTimerStore from "../../../store/useTimerStore.js";
 
 export default function InterviewLayout({children, step}) {
   const videoRef = useRef(null);
   const timerIntervalRef = useRef(null);
-
+  const [isDone, setIsDone] = useState(false)
   const { time, isRunning, decreaseTime } = useTimerStore();
 
   useEffect(() => {
@@ -35,6 +35,10 @@ export default function InterviewLayout({children, step}) {
   // 타이머 제어 로직
   useEffect(() => {
     // 타이머가 실행 중이고 시간이 남아있을 때만 작동
+    if(time === 0){
+      setIsDone(true)
+      // 죽음 음성 실행
+    }
     if (isRunning && time > 0) {
       timerIntervalRef.current = setInterval(() => {
         decreaseTime(0.1);
@@ -77,7 +81,7 @@ export default function InterviewLayout({children, step}) {
           {step !== 4 && <S.ChoiAnimation $isAnimating={isRunning}>
             <S.Choi>
               <S.Rope src="/rope.svg" />
-              <S.Man src="/man.svg" />
+              <S.Man src={isDone ? "/dieMan.svg" : "/man.svg"}/>
             </S.Choi>
           </S.ChoiAnimation>}
         </S.RopeAndManContainer>

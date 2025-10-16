@@ -17,10 +17,11 @@ export default function InterviewResult({ response }) {
   const [feedback, setFeedback] = useState("");
   const [overallEvaluation, setOverallEvaluation] = useState("");
   const [strength, setStrength] = useState("");
-  const audioRef = useRef(null); // 새로운 audio ref 추가
+  const audioRef = useRef(null);
+  const audioRef2 = useRef(null);
 
   const params = useParams();
-  const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 2 : 3;
+  const company_id = params.planet === "핀다" ? 1 : params.planet === "달파" ? 3 : 2;
   const { questions } = useInterviewStore();
   const { tailQuestions } = useTailQuestionsStore();
   const { resetTimer, time } = useTimerStore();
@@ -41,8 +42,10 @@ export default function InterviewResult({ response }) {
       setIsSuccess(apiScore >= 3 && time > 0);
       // 죽음 음성 실행
       if(apiScore < 3 || time === 0){
-        console.log(1)
         audioRef.current && audioRef.current.play();
+      }
+      else{
+        audioRef2.current && audioRef2.current.play();
       }
     } else {
       handleSubmit();
@@ -69,6 +72,8 @@ export default function InterviewResult({ response }) {
       // 죽음 음성 실행
       if(apiScore < 3 || time === 0){
         audioRef.current && audioRef.current.play();
+      }else{
+        audioRef2.current && audioRef2.current.play();
       }
     }
   };
@@ -113,6 +118,7 @@ export default function InterviewResult({ response }) {
       )}
       {/* audio element to play /aaaa.m4a */}
       <audio ref={audioRef} src="/sound/aaaa.m4a" preload="auto" style={{ display: "none" }} />
+      <audio ref={audioRef2} src="/sound/heart.m4a" preload="auto" style={{ display: "none" }} />
     </Modal>
   );
 }

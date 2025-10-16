@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import styled, { keyframes, css } from "styled-components";
 import useTimerStore from "../../../../store/useTimerStore.js";
 import useInterview from "@/store/useInterview.js";

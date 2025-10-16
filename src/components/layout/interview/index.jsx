@@ -8,6 +8,8 @@ export default function InterviewLayout({children, step}) {
   const timerIntervalRef = useRef(null);
   const [isDone, setIsDone] = useState(false)
   const { time, isRunning, decreaseTime } = useTimerStore();
+  const audioRef = useRef(null)
+  const [isShake, setIsShake] = useState(false);
 
   useEffect(() => {
     // Start webcam
@@ -37,7 +39,6 @@ export default function InterviewLayout({children, step}) {
     // 타이머가 실행 중이고 시간이 남아있을 때만 작동
     if(time === 0){
       setIsDone(true)
-      // 죽음 음성 실행
     }
     if (isRunning && time > 0) {
       timerIntervalRef.current = setInterval(() => {
@@ -59,6 +60,15 @@ export default function InterviewLayout({children, step}) {
     };
   }, [isRunning, time, decreaseTime]);
 
+  useEffect(() => {
+      if (79.9 <= time && time < 80) {
+        audioRef.current.play();
+        setIsShake(true)
+        setTimeout(()=>{
+          setIsShake(false)
+        }, 1000)
+      }
+  }, [time]);
   return(
     <S.ReadQuestionContainer>
       {/*타이머*/}
@@ -81,11 +91,16 @@ export default function InterviewLayout({children, step}) {
           {step !== 4 && <S.ChoiAnimation $isAnimating={isRunning}>
             <S.Choi>
               <S.Rope src="/rope.svg" />
-              <S.Man src={isDone ? "/dieMan.svg" : "/man.svg"}/>
+              <S.Man src={
+                isShake
+                  ? (Math.floor(Date.now() / 150) % 4 < 2 ? "/man2.svg" : "/man.svg")
+                  : (isDone ? "/dieMan.svg" : "/man.svg")
+              }/>
             </S.Choi>
           </S.ChoiAnimation>}
         </S.RopeAndManContainer>
       </S.Content>
+      <audio ref={audioRef} src="/sound/daskete.m4a" preload="auto" style={{ display: "none" }} />
     </S.ReadQuestionContainer>
   )
 }

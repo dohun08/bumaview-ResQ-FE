@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as S from "./style";
 import { getProgress } from "@/api/interview.js";
 import useNavigationWithTransition from "@/hooks/useNavigationWithTransition.js";
@@ -26,7 +26,7 @@ const PlanetModal = ({ planet, onClose, isOpen }) => {
 
   const {handleNavigate} = useNavigationWithTransition()
   const handlePlanetBg = async () => {
-    const company_id = planet.name === "핀다" ? 1 : planet.name === "달파" ? 2 : 3;
+    const company_id = planet.name === "핀다" ? 1 : planet.name === "달파" ? 3 : 2;
     try {
       const res = await getProgress(company_id);
       if (res && res.company_id) {
